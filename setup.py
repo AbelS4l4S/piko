@@ -4,10 +4,10 @@ MAJOR = 1
 MINOR = 0
 MICRO = 0
 VERSION = f"{MAJOR}.{MINOR}.{MICRO}"
-DESCRIPTION = 'A Python package for metaheuristic optimization algorithms.'
+DESCRIPTION = 'Python package for metaheuristic optimization algorithms.'
 
 setup(
-        name="piko", 
+        name="tampik", 
         version=VERSION,
         author="Abel Salas Leal",
         author_email="<abelsl1999@gmail.com>",
@@ -16,10 +16,12 @@ setup(
         long_description_content_type="text/markdown",
         url="https://github.com/AbelS4l4S/piko",
         packages=find_packages(),
+        package_data={
+            'tampik': ['data/bench_test_functions.csv'],
+            },
         install_requires=[],
-        keywords=['python', 'optimization', 'metaheuristics',
-                  'operations research', 'artificial intelligence', 
-                  'machine learning'],
+        keywords=['optimization', 'metaheuristics','operations research', 
+                  'artificial intelligence', 'machine learning'],
         classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",

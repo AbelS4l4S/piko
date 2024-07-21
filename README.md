@@ -1,1 +1,1 @@
-# Piko - Optimization algorithms
+# Tampik - Optimization algorithms
