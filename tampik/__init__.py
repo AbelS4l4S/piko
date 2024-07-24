@@ -1,7 +1,5 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Sat Jul 20 23:02:24 2024
+from .functions.base_function import create_bench_function
 
-@author: abel
-"""
+
+def bench_function(name:str, dimension:int):
+    return create_bench_function(name, dimension)

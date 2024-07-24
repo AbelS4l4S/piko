@@ -1,1 +1,5 @@
-# Read carefully
+# Python files
+################
+main.py
+__pycache__/
+
