@@ -3,15 +3,15 @@ import numpy as np
 
 
 class BaseFunction:
-    def __init__(self, name:str, data:dict, dimension:int, parameters:dict):
+    def __init__(self, name:str, dimension:int, data:dict):
         self.name = name
         self.dimension = dimension
         self.latex_formula = data['latex_formula']
         self.latex_dimension = data['latex_dimension']
         self.latex_input_domain = data['latex_input_domain']
-        self.latex_global_minimum = data['latex_global_minimum'],
-        self.np_formula = data['np_formula'],
-        self.function_params = data['parameters'] #Corregir
+        self.latex_global_minimum = data['latex_global_minimum']
+        self.function = data['np_formula']
+        self.parameters = data['parameters']
         self.continuous = data['continuous']
         self.convex = data['convex']
         self.separable = data['separable']
@@ -19,23 +19,25 @@ class BaseFunction:
         self.multimodal = data['multimodal']
         self.randomized_term = data['randomized_term']
         self.parametric = data['parametric']
+        
+        if data['parameters'] is not None:
+            for key, value in data['parameters'].items():
+                setattr(self, key, value)
 
-    # def __init__(self, d, m=5, beta=15):
-    #     self.input_domain = np.array([[-2 * np.pi, 2 * np.pi] for _ in range(d)])
-    #     self.m = m
-    #     self.beta = beta
-
-    # def get_param(self):
-    #     return {"m": self.m, "beta": self.beta}
-
-    # def get_global_minimum(self, d):
-    #     X = np.array([0 for i in range(1, d + 1)])
-    #     return (X, self(X))
-
-    # def __call__(self, X):
-    #     res = np.exp(-np.sum((X / self.beta) ** (2 * self.m)))
-    #     res = res - 2 * np.exp(-np.prod(X**2)) * np.prod(np.cos(X) ** 2)
-    #     return res
+    def __call__(self, X):
+        X = np.atleast_2d(X)
+        
+        if X.shape[1] != self.dimension:
+            raise ValueError(f"Dimension must be: {self.dimension}")
+        
+        parameters = self.function.__code__.co_varnames
+        
+        args = [self.parameters[param]
+                for param in parameters 
+                if param in self.parameters
+        ]
+        
+        return self.function(*args, X)
 
 
 def get_function_data(name:str) -> dict:
@@ -78,4 +80,4 @@ def create_bench_function(name:str, user_dim:int=0, params:dict={}):
         for parameter in data['parameters'].keys():
             data['parameters'][parameter] = params[parameter]
 
-    return BaseFunction(name, data, dimension, params)
+    return BaseFunction(name, dimension, data)
