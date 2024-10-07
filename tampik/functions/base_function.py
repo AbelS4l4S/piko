@@ -28,7 +28,7 @@ class BaseFunction:
         X = np.atleast_2d(X)
         
         if X.shape[1] != self.dimension:
-            raise ValueError(f"Dimension must be: {self.dimension}")
+            raise ValueError(f"Input matrix dimension must be: {self.dimension}")
         
         parameters = self.function.__code__.co_varnames
         
@@ -50,27 +50,20 @@ def check_dimension(bench_function:str, user_dim:int, bench_dim:str):
     if not (isinstance(user_dim, int) and user_dim >= 0):
         raise ValueError(
             f"Test bench function '{bench_function}' dimension" \
-                "must be a positive int")
+                " must be a positive int")
     
-    if bench_dim.isdigit() and (int(bench_dim) != user_dim):
+    if bench_dim and (bench_dim != user_dim):
         raise ValueError(
             f"Test bench function '{bench_function}' dimension" \
-                "must be {bench_dim}.")
-    
-    if bench_dim.isdigit() and not user_dim:
-        raise ValueError(
-            'A dimension must be asigned for the test bench function' \
-                f"'{bench_function}'")
-    
-    if not user_dim:
-        user_dim = int(bench_dim)
+                f" must be {bench_dim}.")
     
     return user_dim
 
 
-def create_bench_function(name:str, user_dim:int=0, params:dict={}):
+def create_bench_function(name:str, user_dim=2, params:dict={}):
     data = get_function_data(name)
-    dimension = check_dimension(name, user_dim, data['latex_dimension'][2:])
+    dimension = check_dimension(name, user_dim, data['fix_dimension'])
+    # check_parameters()
         
     if len(params)>0:
         if params.keys() != data['parameters'].keys():
