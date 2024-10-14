@@ -1,4 +1,3 @@
-from ..data.bench_test_functions import data_functions
 import numpy as np
 
 
@@ -6,9 +5,11 @@ class BaseFunction:
     def __init__(self, name:str, dimension:int, data:dict):
         self.name = name
         self.dimension = dimension
+        self.fix_dimension = data['fix_dimension']
         self.latex_formula = data['latex_formula']
         self.latex_dimension = data['latex_dimension']
         self.latex_input_domain = data['latex_input_domain']
+        self.global_minimum = data['global_minimun']
         self.latex_global_minimum = data['latex_global_minimum']
         self.function = data['np_formula']
         self.parameters = data['parameters']
@@ -20,6 +21,11 @@ class BaseFunction:
         self.randomized_term = data['randomized_term']
         self.parametric = data['parametric']
         
+        if not self.fix_dimension:
+            self.input_domain = data['input_domain'](self.dimension)
+        else:
+            self.input_domain = data['input_domain']()
+        
         if data['parameters'] is not None:
             for key, value in data['parameters'].items():
                 setattr(self, key, value)
@@ -30,6 +36,8 @@ class BaseFunction:
         if X.shape[1] != self.dimension:
             raise ValueError(f"Input matrix dimension must be: {self.dimension}")
         
+        boundaries = self.input_domain.T
+        X = np.clip(X, boundaries[0,:], boundaries[1,:])
         parameters = self.function.__code__.co_varnames
         
         args = [self.parameters[param]
@@ -38,39 +46,3 @@ class BaseFunction:
         ]
         
         return self.function(*args, X)
-
-
-def get_function_data(name:str) -> dict:
-    if name not in data_functions.keys():
-        raise ValueError(f"Test bench function '{name}' not founded.")
-    return data_functions[name]
-
-
-def check_dimension(bench_function:str, user_dim:int, bench_dim:str):
-    if not (isinstance(user_dim, int) and user_dim >= 0):
-        raise ValueError(
-            f"Test bench function '{bench_function}' dimension" \
-                " must be a positive int")
-    
-    if bench_dim and (bench_dim != user_dim):
-        raise ValueError(
-            f"Test bench function '{bench_function}' dimension" \
-                f" must be {bench_dim}.")
-    
-    return user_dim
-
-
-def create_bench_function(name:str, user_dim=2, params:dict={}):
-    data = get_function_data(name)
-    dimension = check_dimension(name, user_dim, data['fix_dimension'])
-    # check_parameters()
-        
-    if len(params)>0:
-        if params.keys() != data['parameters'].keys():
-            raise ValueError(
-                f"'{name}' only accept {data['parameters'].keys()}"\
-                    "parameters")
-        for parameter in data['parameters'].keys():
-            data['parameters'][parameter] = params[parameter]
-
-    return BaseFunction(name, dimension, data)
