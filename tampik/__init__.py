@@ -1,5 +1,6 @@
-from .functions.base_function import create_bench_function
+from .functions.factory import BenchFunctionBuilder
 
 
 def bench_function(name:str, dimension:int, params:dict={}):
-    return create_bench_function(name, dimension, params)
+    function_buldier = BenchFunctionBuilder(name, dimension, params)
+    return function_buldier.build_function()
